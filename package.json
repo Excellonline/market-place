@@ -3,6 +3,27 @@
   "version": "0.1.0",
   "description": "Personal marketplace listing manager for Facebook Marketplace and Kijiji Canada",
   "private": true,
+  "license": "UNLICENSED",
+  "engines": {
+    "node": ">=22",
+    "npm": ">=10"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Excellonline/market-place.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Excellonline/market-place/issues"
+  },
+  "homepage": "https://github.com/Excellonline/market-place#readme",
+  "keywords": [
+    "electron",
+    "facebook-marketplace",
+    "kijiji",
+    "marketplace",
+    "playwright",
+    "react"
+  ],
   "main": "out/main/index.js",
   "scripts": {
     "dev": "electron-vite dev",

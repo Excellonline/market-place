@@ -1,114 +1,175 @@
 # Marketplace Tool
 
-Personal desktop app for managing your own listings on Facebook Marketplace and Kijiji Canada. Monitors ad age, lets you renew or repost aging ads with one click, and supports composing a single ad and publishing it to multiple platforms.
+[![CI](https://github.com/Excellonline/market-place/actions/workflows/ci.yml/badge.svg)](https://github.com/Excellonline/market-place/actions/workflows/ci.yml)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.7-3178c6)
+![Electron](https://img.shields.io/badge/Electron-33-47848f)
+![React](https://img.shields.io/badge/React-19-149eca)
 
-> Personal use only. Driving Playwright against Facebook violates their ToS and can result in account bans. Use a non-essential account.
+Marketplace Tool is a Windows desktop app for managing personal Facebook Marketplace and Kijiji Canada listings from one place. It tracks listing age, helps draft cross-platform listings, and provides guarded renew, repost, snooze, scan, and export workflows.
 
-## Stack
+> Important: this app is for personal use. Browser automation against third-party platforms can violate platform terms and may trigger account restrictions. Use only with accounts and listings you own, and keep manual oversight in the loop.
 
-- Electron 33 + TypeScript + React 19 + Tailwind v4
-- Playwright (headed Chromium, persistent profile per platform)
-- SQLite via better-sqlite3 12 (with prebuilt Node 24 + Electron ABI binaries)
-- Built with electron-vite, packaged with electron-builder
+## Highlights
 
-## Quick start
+| Area | What it does |
+| --- | --- |
+| Listing dashboard | Tracks active ads, aging inventory, recent failures, scan progress, and next scheduled scan. |
+| Cross-platform compose | Draft one listing with title, description, price, photos, categories, and platform-specific overrides. |
+| Safer automation | Uses headed Chromium, action cooldowns, daily caps, pause controls, and captcha/checkpoint detection. |
+| Operational history | Records scans, renewals, reposts, creates, deletes, failures, and retryable actions. |
+| Local-first data | Stores the SQLite database, photos, browser profiles, logs, and backups on the local machine. |
+| Maintenance hooks | Keeps selectors centralized per platform and documents known fragile locator areas. |
 
-```pwsh
-npm run setup        # installs deps, rebuilds native for Electron, downloads Chromium
-npm run dev          # launches dev window with HMR
-npm test             # runs vitest (auto-rebuilds for Node, restores for Electron after)
-npm run dist:win     # builds a Windows installer to dist/
-```
-
-## Data locations
-
-All user data lives under `%APPDATA%/marketplace-tool/`:
-
-- `marketplace.db` — SQLite database (ads, drafts, history, settings, notes)
-- `photos/<sha256>.<ext>` — content-addressed photo store (originals)
-- `photos/thumbs/<sha256>.jpg` — 96×96 sharp-generated thumbnails for the dashboard
-- `profiles/facebook/`, `profiles/kijiji/` — Playwright persistent browser profiles
-- `logs/` — pino app log + `failure-*.png` screenshots when an adapter step fails
-
-## Features
+## Feature Tour
 
 ### Dashboard
-- Per-platform health chips (click for status, last error, inline failure screenshot, retry/login actions)
-- Live scan progress bar (per-platform step + counter)
-- Stats strip: active ads, aging, actions today, 30-day failure or success rate
-- Next-scan countdown
-- Search, filter by platform, filter by age range (Fresh / Aging / Old / Any)
-- Row actions: Renew (with cooldown indicator), Repost, Snooze, Open on platform
-- Bulk select with live progress modal — renew/repost/delete/snooze with per-row results
-- URL-synced filters: bookmark `?p=kijiji&q=desk` and refresh-safely
 
-### Compose & Drafts
-- Title + description + price + photos (up to 10, drag to reorder, Ctrl/Cmd+V to paste from clipboard, first is the cover)
-- Per-platform fields: category, condition, price override
-- Save as draft → list all drafts → republish from one click
-- Multi-platform publish with progress feedback
+- Per-platform health chips with last error details, inline failure screenshot paths, retry actions, and login actions.
+- Live scan progress with current platform step and item counters.
+- Search plus platform and age filters, with refresh-safe URL state.
+- Row actions for renew, repost, snooze, delete, and opening the source listing.
+- Bulk renew, repost, delete, and snooze with per-row progress results.
 
-### Activity & Errors
-- Full chronological history (scan/renew/repost/create/delete + success/fail)
-- Filter by platform, action type, failures-only
-- One-click retry on failed entries
-- Sidebar badge counts recent failures
-- Errors page shows raw error message + path to failure screenshot
+### Compose And Drafts
 
-### Notifications
-- Desktop toast + in-app toast for aging ads, scan errors, captchas
-- Toggle per category in Settings
+- Listing composer with title, description, price, notes, and up to 10 photos.
+- Drag-to-reorder photos, paste from clipboard, and cover-photo behavior.
+- Platform-specific category, condition, and price override fields.
+- Draft saving, draft reuse, and multi-platform publish progress.
 
-### Scheduling & Safety
-- node-cron daily scan with cron presets (Daily 9am, Twice daily, etc.) + custom
-- Per-platform pause: 1h / 8h / 1d / 1w buttons in Settings
-- Global pause toggle for all scheduled scans
-- Per-ad snooze with 1h / 8h / 1d / 3d / 1w presets
-- 12h cooldown between automated actions on the same ad
-- Daily action cap per platform (default 20/30)
-- Headed Chromium only, `--disable-blink-features=AutomationControlled`, per-platform mutex
-- Captcha / checkpoint detection → pause + notify
+### Activity And Errors
 
-### Data
-- Export ads to CSV
-- Export activity to CSV
-- Backup everything (DB + photos + logs) to a zip — excludes browser profiles for security
-- Open user data folder
-- Per-ad private notes (never pushed to platforms)
-- Per-platform reset (deletes the Playwright profile, forces re-login)
+- Chronological history for scan, renew, repost, create, delete, success, and failure events.
+- Filters for platform, action type, and failures-only views.
+- One-click retry on failed entries when supported.
+- Dedicated errors page with raw messages and screenshot paths.
 
-### Keyboard shortcuts
-- `/` or `⌘K/Ctrl+K` — focus search
-- `r` — Scan now
-- `x` — clear search
-- `g d/c/r/a/e/s` — go to Dashboard / Compose / Drafts / Activity / Errors / Settings
-- `?` — show shortcuts
-- `Esc` — close dialogs
+### Data And Safety
 
-## Maintenance
+- CSV export for ads and activity.
+- Full local backup to zip for database, photos, and logs.
+- Browser profiles are excluded from backups for account security.
+- Per-ad private notes stay local and are never pushed to platforms.
+- Per-platform profile reset for forced re-login.
 
-When a platform changes its layout and an adapter breaks, you'll see a red health chip with the failing locator name and a screenshot path inside `%APPDATA%/marketplace-tool/logs/`. Update `src/main/platforms/<platform>/selectors.ts` and bump `docs/selectors.md` with the date.
+## Tech Stack
 
-## Tests
+- Electron 33, electron-vite, and electron-builder
+- TypeScript, React 19, React Router, TanStack Query, and Zustand
+- Tailwind CSS v4 and Lucide icons
+- SQLite through `better-sqlite3`
+- Playwright with persistent headed Chromium profiles
+- Vitest for unit tests
 
-40+ unit tests across:
-- `repos.test.ts` — DB layer, filtering, undefined-vs-null handling
-- `actions.test.ts` — orchestration (renew/delete/repost) with mocked adapters, cooldown, snooze, daily cap
-- `cron-next.test.ts` — cron parsing edge cases (lists, ranges, steps, dow=0/7 equivalence, weekday-only)
-- `humanize.test.ts` — delay timing, day boundary math
-- `photo-store.test.ts` — sha256 dedup, magic-byte detection, import from disk
-- `schedule-pause.test.ts` — per-platform pause invariants
+## Getting Started
 
-Run `npm test` — automatically rebuilds better-sqlite3 for Node first, then restores Electron ABI in `posttest`.
+### Prerequisites
 
-## Safety posture
+- Windows 10 or Windows 11
+- Node.js 22 or newer
+- npm
+- Git
 
-- Headed browser only (`--disable-blink-features=AutomationControlled`)
-- One Chromium per profile, never two operations against the same profile concurrently
-- Human-like delays, mouse movement, typing speed
-- Per-ad 12h cooldown, configurable daily action cap
-- Captcha / checkpoint detection pauses automation and surfaces inline failure screenshots
+### Install And Run
+
+```pwsh
+npm run setup
+npm run dev
+```
+
+`npm run setup` installs dependencies, rebuilds native Electron modules, and downloads the Playwright Chromium browser.
+
+### Common Scripts
+
+| Command | Purpose |
+| --- | --- |
+| `npm run dev` | Start the Electron app in development mode with hot reload. |
+| `npm run typecheck` | Run TypeScript checks for main, preload, and renderer code. |
+| `npm test` | Run the Vitest unit suite. |
+| `npm run build` | Build the Electron app output. |
+| `npm run pack:win` | Build an unpacked Windows app directory. |
+| `npm run dist:win` | Build a Windows installer into `dist/`. |
+| `npm run install:chromium` | Install the Playwright Chromium browser. |
+| `npm run rebuild:electron` | Rebuild native dependencies for Electron. |
+
+## Project Structure
+
+```text
+src/
+  main/         Electron main process, IPC handlers, data layer, schedulers, platform adapters
+  preload/      Typed bridge exposed to the renderer
+  renderer/     React app, pages, components, hooks, and styles
+  shared/       Shared schemas, categories, and TypeScript types
+tests/
+  unit/         Vitest coverage for data, scheduling, parsing, actions, and photos
+docs/
+  selectors.md  Selector maintenance notes for marketplace adapters
+```
+
+## Local Data
+
+User data is stored under `%APPDATA%\marketplace-tool\`.
+
+| Path | Purpose |
+| --- | --- |
+| `marketplace.db` | SQLite database for ads, drafts, history, settings, and notes. |
+| `photos\` | Content-addressed original photo storage. |
+| `photos\thumbs\` | Generated dashboard thumbnails. |
+| `profiles\facebook\` | Facebook Marketplace Playwright browser profile. |
+| `profiles\kijiji\` | Kijiji Playwright browser profile. |
+| `logs\` | App logs and failure screenshots. |
+
+The app keeps platform login state inside local Playwright profiles. Do not commit profiles, cookies, exported backups, logs, screenshots, or database files.
+
+## Automation Posture
+
+Marketplace Tool is intentionally conservative:
+
+- Headed Chromium only.
+- One browser profile per platform.
+- Mutex-protected platform operations.
+- Human-like delays and typing behavior.
+- Per-ad cooldown before repeated automated actions.
+- Daily action caps per platform.
+- Global, per-platform, and per-ad pause controls.
+- Captcha and checkpoint detection that pauses automation and surfaces the failure.
+
+## Maintaining Platform Adapters
+
+Marketplace UIs change often. Keep selectors centralized in:
+
+- `src/main/platforms/facebook/selectors.ts`
+- `src/main/platforms/kijiji/selectors.ts`
+
+When a locator changes, update the selector file and record the change in [docs/selectors.md](docs/selectors.md).
+
+## Testing
+
+The unit suite covers:
+
+- Database repositories and filters
+- Action orchestration with mocked adapters
+- Cooldowns, snoozing, and daily caps
+- Cron parsing edge cases
+- Human-readable time formatting
+- Photo import, hashing, type detection, and thumbnails
+- Facebook and Kijiji parser behavior
+
+Run:
+
+```pwsh
+npm run typecheck
+npm test
+```
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for local setup, pull request expectations, and adapter maintenance notes.
+
+## Security
+
+See [SECURITY.md](SECURITY.md) before reporting vulnerabilities or sharing logs. Do not post cookies, profile folders, database files, screenshots with private listing data, or account details in public issues.
 
 ## Status
 
-v1 complete. See `C:\Users\Sever\.claude\plans\i-want-to-build-zippy-dijkstra.md` for the original implementation plan.
+Version `0.1.0` is a personal-use desktop automation tool. It is not affiliated with Facebook, Meta, Kijiji, or their parent companies.

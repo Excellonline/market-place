@@ -1,0 +1,58 @@
+name: Bug report
+description: Report a reproducible problem in the desktop app.
+title: "[Bug]: "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting this. Do not include browser profiles, cookies, databases, backups, or screenshots with private account details.
+  - type: input
+    id: version
+    attributes:
+      label: App version
+      description: The app version or commit SHA you are running.
+      placeholder: "0.1.0"
+    validations:
+      required: true
+  - type: dropdown
+    id: platform
+    attributes:
+      label: Marketplace platform
+      options:
+        - Facebook Marketplace
+        - Kijiji
+        - Both
+        - Not platform-specific
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: List the smallest set of steps that causes the problem.
+      placeholder: |
+        1. Go to ...
+        2. Click ...
+        3. See ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Safe diagnostic notes
+      description: Paste only redacted logs or high-level error messages.
+      render: text
