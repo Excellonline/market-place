@@ -46,7 +46,7 @@
     "archiver": "^7.0.1",
     "archiver-utils": "^5.0.2",
     "better-sqlite3": "^12.10.0",
-    "lucide-react": "^0.469.0",
+    "lucide-react": "^1.21.0",
     "nanoid": "^5.0.9",
     "node-cron": "^3.0.3",
     "pino": "^9.5.0",
