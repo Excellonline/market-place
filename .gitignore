@@ -1,0 +1,29 @@
+node_modules/
+out/
+dist/
+.vite/
+*.log
+*.tsbuildinfo
+
+# Local artifacts that shouldn't ever be committed
+.claude/
+*.db
+*.db-journal
+*.db-shm
+*.db-wal
+photos/
+profiles/
+logs/
+
+# IDE / OS
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea/
+.DS_Store
+Thumbs.db
+
+# Env
+.env
+.env.*
+!.env.example
